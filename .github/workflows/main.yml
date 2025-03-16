@@ -1,0 +1,52 @@
+name: CI_ldc_go_access_control_api
+
+on:
+  push:
+    branches: [ no ci ]
+  pull_request:
+    branches: [ no ci ] 
+
+jobs:
+  deploy:
+    runs-on: [self-hosted]
+
+    steps:
+      # 1. Checkout Code
+      - name: Checkout Code
+        uses: actions/checkout@v4.1.1
+
+      # 2. Extract Version from `version.go` or a VERSION file
+      - name: Extract Version
+        id: extract_version
+        run: |
+          app_version=$(grep -oP '(?<=Version = ")[^"]+' ./internal/version/version.go || echo "0.0.1-dev")
+          echo "EXTRACTED_VERSION=${app_version}" >> "$GITHUB_OUTPUT"
+
+      # 3. Log in to DockerHub
+      - name: Docker Login
+        uses: docker/login-action@v3.1.0
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # 4. Build and Push Docker Image
+      - name: Build and Push Docker Image
+        id: docker_build
+        uses: docker/build-push-action@v5.3.0
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: landscapedatacommons/ldc-go-access-control-api:${{ steps.extract_version.outputs.EXTRACTED_VERSION }}
+
+
+      # 5. Deploy to Remote Server
+      - name: Deploy to Remote Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          script: |
+            docker service update ldcgo_access_control_api \
+            --image=docker.io/landscapedatacommons/ldc-go-access-control-api:${{ steps.extract_version.outputs.EXTRACTED_VERSION }}
