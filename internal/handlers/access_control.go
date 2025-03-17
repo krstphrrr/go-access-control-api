@@ -31,7 +31,7 @@ func GetAccessControls(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Debugging: Log extracted token
-	fmt.Println("Extracted Token:", token)
+	// fmt.Println("Extracted Token:", token)
 
 	claims, err := auth.VerifyJWTWithCognito(token)
 	if err != nil {
@@ -40,7 +40,7 @@ func GetAccessControls(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Debugging: Log Cognito claims
-	fmt.Println("JWT Claims:", claims)
+	// fmt.Println("JWT Claims:", claims)
 
 	// Restrict access based on user group
 	groups, ok := claims["cognito:groups"].([]interface{})
