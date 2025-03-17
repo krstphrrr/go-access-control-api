@@ -48,5 +48,5 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            docker service update ldcgo_access_control_api \
+            docker service update ldc_accesscontrolapi \
             --image=docker.io/landscapedatacommons/ldc-go-access-control-api:${{ steps.extract_version.outputs.EXTRACTED_VERSION }}
