@@ -30,7 +30,12 @@ func main() {
 
 
 	corsHandler := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:4200"}, // ✅ Allow Angular
+		AllowedOrigins:   []string{
+			"http://localhost:4200",
+			"https://api.landscapedatacommons.org",
+			"https://devapi.landscapedatacommons.org",
+			"http://192.168.177.154",
+			 }, // ✅ Allow Angular
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Authorization", "Content-Type"},
 		AllowCredentials: true,
